@@ -17,11 +17,8 @@ import meetingRoutes from "./routes/meeting.route";
 
 const app = express();
 const BASE_PATH = config.BASE_PATH;
-
 app.use(express.json());
-
 app.use(express.urlencoded({ extended: true }));
-
 app.use(passport.initialize());
 
 app.use(
@@ -32,9 +29,8 @@ app.use(
 );
 
 app.get(
-  "/",
+  "/api/health",
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    throw new BadRequestException("throwing async error");
     res.status(HTTPSTATUS.OK).json({
       message: "Healthy",
     });
@@ -46,7 +42,6 @@ app.use(`${BASE_PATH}/event`, eventRoutes);
 app.use(`${BASE_PATH}/availability`, availabilityRoutes);
 app.use(`${BASE_PATH}/integration`, integrationRoutes);
 app.use(`${BASE_PATH}/meeting`, meetingRoutes);
-
 app.use(errorHandler);
 
 app.listen(config.PORT, async () => {
