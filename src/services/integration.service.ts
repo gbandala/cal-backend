@@ -91,11 +91,10 @@ export const getUserIntegrationsService = async (userId: string) => {
   const connectedMap = new Map(
     userIntegrations.map((integration) => [integration.app_type, true])
   );
-  console.log("Connected integrations:", connectedMap);
-
-  // PASO 3: Generar lista completa de todas las integraciones disponibles
+  
+   // PASO 3: Generar lista completa de todas las integraciones disponibles
   // Combina apps disponibles (enum) con estado actual (conectado/no conectado)
-  return Object.values(IntegrationAppTypeEnum).flatMap((appType) => {
+  const result = Object.values(IntegrationAppTypeEnum).flatMap((appType) => {
     return {
       provider: appTypeToProviderMap[appType],    // Proveedor base (Google, Zoom, etc.)
       title: appTypeToTitleMap[appType],          // Nombre amigable para UI
@@ -104,6 +103,10 @@ export const getUserIntegrationsService = async (userId: string) => {
       isConnected: connectedMap.has(appType) || false, // Estado actual de conexión
     };
   });
+
+  console.log('Resultado de getUserIntegrationsService:', result);
+  
+  return result;
 };
 
 /**
@@ -126,7 +129,10 @@ export const checkIntegrationService = async (
   const integration = await integrationRepository.findOne({
     where: { user: { id: userId }, app_type: appType },
   });
-
+  console.log(
+    `Checking integration for user ${userId} and app ${appType}:`,
+    integration ? "Connected" : "Not connected"
+  );
   // RETORNO SIMPLE: boolean para lógica condicional
   if (!integration) {
     return false;
@@ -280,6 +286,7 @@ export const validateGoogleToken = async (
     // LLAMADA API: Solicitar nuevos tokens a Google
     const { credentials } = await googleOAuth2Client.refreshAccessToken();
     
+    console.log("New access token obtained:", credentials.access_token);
     // RETORNO: Nuevo access token válido
     return credentials.access_token;
   }
